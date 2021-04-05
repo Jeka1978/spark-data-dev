@@ -6,3 +6,5 @@
 {"name":"Baruch Sadogursky", "age":38, "keywords": ["docker", "spring","groovy","bintray","artifactory","linux"]}
 {"name":"Viktor Gamov", "age":28,"keywords": ["spring","maven","spock","spring boot"]}
 {"name":"Kirill Tolkachov", "age":28,"keywords": ["groovy", "spring","maven","spock","spring boot"]}
+{"name":"Kirill Tolkachov", "age":30,"keywords": ["groovy", "spring","maven","spock","spring boot","zipkin"]}
+{"name":"Kirill tolkachov", "age":39,"keywords": ["groovy", "spring","maven","spock","spring boot","zipkin"]}

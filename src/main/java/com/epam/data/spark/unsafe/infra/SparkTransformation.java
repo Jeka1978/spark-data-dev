@@ -9,7 +9,7 @@ import java.util.List;
  * @author Evgeny Borisov
  */
 public interface SparkTransformation {
-    Dataset<Row> transform(Dataset<Row> dataset,List<String> fieldNames, List<?> params);
+    Dataset<Row> transform(Dataset<Row> dataset,List<String> fieldNames, OrderedBag<?> params);
 
 
 }

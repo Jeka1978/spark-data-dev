@@ -9,5 +9,5 @@ import java.util.List;
  * @author Evgeny Borisov
  */
 public interface Finalizer {
-    Object doAction(Dataset<Row> dataset, List<Object> args, Class<?> returnType,Class<?> modelClass);
+    Object doAction(Dataset<Row> dataset, OrderedBag<?> args, Class<?> returnType,Class<?> modelClass);
 }

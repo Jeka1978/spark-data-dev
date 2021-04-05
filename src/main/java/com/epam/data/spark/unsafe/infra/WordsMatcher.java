@@ -13,7 +13,6 @@ public class WordsMatcher {
     public static String findAndRemoveMatchingPieces(Set<String> options, List<String> pieces) {
         StringBuilder match = new StringBuilder(pieces.remove(0));
         List<String> remainingOptions = options.stream().filter(option -> option.toLowerCase().startsWith(match.toString().toLowerCase())).collect(Collectors.toList());
-//        ArrayList<String> remainedOptions = new ArrayList<>(options);
         if (remainingOptions.size() == 0) {
             return "";
         }

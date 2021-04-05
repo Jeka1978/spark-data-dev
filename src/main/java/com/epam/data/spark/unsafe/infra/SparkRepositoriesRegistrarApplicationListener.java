@@ -23,6 +23,7 @@ public class SparkRepositoriesRegistrarApplicationListener implements Applicatio
 
         AnnotationConfigApplicationContext solidContext = new AnnotationConfigApplicationContext(Conf.class);
         SparkInvocationHandlerFactory invocationHandlerFactory = solidContext.getBean(SparkInvocationHandlerFactory.class);
+        DataExtractorResolver dataExtractorResolver = solidContext.getBean(DataExtractorResolver.class);
         invocationHandlerFactory.setRealContext(context);
         ConfigurableListableBeanFactory beanFactory = ((GenericWebApplicationContext) context).getBeanFactory();
 
@@ -35,6 +36,8 @@ public class SparkRepositoriesRegistrarApplicationListener implements Applicatio
         JavaSparkContext sc = new JavaSparkContext(sparkSession.sparkContext());
 
         beanFactory.registerSingleton("sc", sc);
+
+        beanFactory.registerSingleton("dataExtractorResolver", dataExtractorResolver);
 
 
         Reflections scanner = new Reflections("com.epam");

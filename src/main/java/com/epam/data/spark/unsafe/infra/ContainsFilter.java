@@ -11,16 +11,12 @@ import java.util.List;
  * @author Evgeny Borisov
  */
 @Component("contains")
-@FilterTransformation
-public class ContainsFilter implements SparkTransformation {
+public class ContainsFilter implements SparkFilterTransformation {
 
 
     @Override
-    public Dataset<Row> transform(Dataset<Row> dataset, List<String> fieldNames, List<?> params) {
-        System.out.println("**************123(***********");
-        System.out.println(fieldNames.get(0));
-        System.out.println(params.get(0));
-        return dataset.filter(functions.col(fieldNames.get(0)).contains(params.get(0)));
+    public Dataset<Row> transform(Dataset<Row> dataset, List<String> fieldNames, OrderedBag<?> params) {
+        return dataset.filter(functions.col(fieldNames.get(0)).contains(params.takeAndRemove()));
     }
 
 

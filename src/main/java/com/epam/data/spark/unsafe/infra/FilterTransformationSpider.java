@@ -1,5 +1,6 @@
 package com.epam.data.spark.unsafe.infra;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import scala.Tuple2;
 
@@ -13,8 +14,8 @@ import java.util.Set;
 @Component("findBy")
 public class FilterTransformationSpider implements SparkTransformationSpider {
 
-    @FilterTransformation
-    private Map<String,SparkTransformation> filterTransformations;
+    @Autowired
+    private Map<String,SparkFilterTransformation> filterTransformations;
 
 
     @Override

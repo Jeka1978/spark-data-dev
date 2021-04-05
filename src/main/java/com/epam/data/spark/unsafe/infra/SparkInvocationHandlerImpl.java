@@ -1,29 +1,28 @@
 package com.epam.data.spark.unsafe.infra;
 
+import com.epam.conference.sparkdatauser.Criminal;
 import lombok.Builder;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.*;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import scala.Tuple2;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Evgeny Borisov
  */
 @Builder
 public class SparkInvocationHandlerImpl implements SparkInvocationHandler {
+    private DataExtractor dataExtractor;
     private Map<Method, List<Tuple2<SparkTransformation, List<String>>>> method2Chain;
     private Map<Method, Finalizer> finalizerMap;
     private Class<?> modelClass;
     private ConfigurableApplicationContext context;
     private String pathToSource;
+    private PostFinalizer postFinalizer;
 
 
     @Override
@@ -34,11 +33,11 @@ public class SparkInvocationHandlerImpl implements SparkInvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method method, Object[] args) {
 
-        Dataset<Row> dataset = context.getBean(SparkSession.class).read().json(pathToSource);
+        Dataset<Row> dataset = dataExtractor.readFrom(pathToSource, modelClass, context);
 
-        List<Object> arguments = Arrays.stream(args).collect(Collectors.toList());
+        OrderedBag<?> arguments = new OrderedBag<>(args);
 
         List<Tuple2<SparkTransformation, List<String>>> tupleChain = method2Chain.get(method);
         for (Tuple2<SparkTransformation, List<String>> tuple : tupleChain) {
@@ -46,21 +45,27 @@ public class SparkInvocationHandlerImpl implements SparkInvocationHandler {
             List<String> usedFieldNames = tuple._2();
             dataset = sparkTransformation.transform(dataset, usedFieldNames, arguments);
         }
-        return finalizerMap.get(method).doAction(dataset, arguments, method.getReturnType(),modelClass);
+        Object o = finalizerMap.get(method).doAction(dataset, arguments, method.getReturnType(), modelClass);
+        return postFinalizer.postFinalize(o,context);
 
 
     }
 
     public static void main(String[] args) {
-        String s = "findByAmountGreaterThanAndAmountLessThanAndAmountEqualsOrderByAmount";
+        SparkSession session = SparkSession.builder().master("local").appName("a").getOrCreate();
+        /*   String s = "findByAmountGreaterThanAndAmountLessThanAndAmountEqualsOrderByAmount";
         String[] r = s.split("(?=\\p{Upper})");
         Arrays.stream(r).forEach(System.out::println);
-
         String[] strings = {"name"};
 
-        SparkSession.builder().master("local").appName("a").getOrCreate().read()
+        session.read()
                 .json("data/profiles.json")
-                .orderBy("age", strings).show();
+                .orderBy("age", strings).show();*/
+
+        Encoder<Criminal> encoder = Encoders.bean(Criminal.class);
+        List<Criminal> criminals = session.read()
+                .schema(encoder.schema()).option("header", true).csv("data/criminals.csv").as(encoder).collectAsList();
+        criminals.forEach(System.out::println);
 
     }
 }

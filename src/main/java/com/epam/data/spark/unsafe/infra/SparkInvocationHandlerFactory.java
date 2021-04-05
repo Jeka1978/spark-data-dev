@@ -27,6 +27,9 @@ public class SparkInvocationHandlerFactory {
 
     private final Map<String, SparkTransformationSpider> spidersMap;
 
+
+    private final DataExtractorResolver dataExtractorResolver;
+
     private SparkTransformationSpider currentSpider;
 
 
@@ -39,8 +42,8 @@ public class SparkInvocationHandlerFactory {
         Map<Method, List<Tuple2<SparkTransformation, List<String>>>> method2TransformationChain = new HashMap<>();
 
         Set<String> fieldNames = getModelFieldNames(modelClass);
-        System.out.println("fieldNames = " + fieldNames);
 
+        DataExtractor dataExtractor = dataExtractorResolver.resolve(pathToSource);
 
         Method[] methods = sparkDataInterface.getMethods();
         for (Method method : methods) {
@@ -62,6 +65,7 @@ public class SparkInvocationHandlerFactory {
             }
             finalizerMap.put(method, name2Finalizer.get(finalizerName));
 
+
         }
         return SparkInvocationHandlerImpl.builder()
                 .context(realContext)
@@ -69,12 +73,15 @@ public class SparkInvocationHandlerFactory {
                 .pathToSource(pathToSource)
                 .method2Chain(method2TransformationChain)
                 .finalizerMap(finalizerMap)
+                .dataExtractor(dataExtractor)
+                .postFinalizer(new LazyCollectionSetterPostFinalizer())
                 .build();
     }
 
     private Set<String> getModelFieldNames(Class<?> modelClass) {
         return Arrays.stream(modelClass.getDeclaredFields())
                 .filter(field -> !field.isAnnotationPresent(Transient.class))
+                .filter(field -> !(Collection.class.isAssignableFrom(field.getType())))
                 .map(Field::getName)
                 .collect(Collectors.toSet());
     }

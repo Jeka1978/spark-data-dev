@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class SortTransformation implements SparkTransformation {
     @Override
-    public Dataset<Row> transform(Dataset<Row> dataset, List<String> fieldNames, List<?> params) {
+    public Dataset<Row> transform(Dataset<Row> dataset, List<String> fieldNames, OrderedBag<?> params) {
         return dataset.orderBy(fieldNames.get(0), fieldNames.stream().skip(1).toArray(String[]::new));
     }
 }

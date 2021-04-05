@@ -1,1 +1,2 @@
 org.springframework.context.ApplicationContextInitializer = com.epam.data.spark.unsafe.infra.SparkRepositoriesRegistrarApplicationListener
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.epam.data.spark.SparkDataStarterConf

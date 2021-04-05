@@ -12,7 +12,7 @@ import java.util.List;
 @Component("count")
 public class CountFinalizer implements Finalizer {
     @Override
-    public Object doAction(Dataset<Row> dataset, List<Object> args, Class<?> returnType,Class<?> modelClass) {
+    public Object doAction(Dataset<Row> dataset, OrderedBag<?> args, Class<?> returnType,Class<?> modelClass) {
         return dataset.count();
     }
 

@@ -10,5 +10,5 @@ import java.util.List;
 public interface PersonRepository extends SparkRepository<Person> {
     List<Person> findByAgeGreaterThan(int age);
     List<Person> findByAgeGreaterThanAndNameContains(int age,String suffix);
-    List<Person> findByAgeGreaterThanAndNameContainsSortByNameAndAge(int age,String suffix);
+    List<Person> findByAgeGreaterThanAndNameEqualsIgnoreCaseSortByNameAndAge(int age, String suffix);
 }

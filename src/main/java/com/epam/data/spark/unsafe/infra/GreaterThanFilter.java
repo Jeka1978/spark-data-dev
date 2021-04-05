@@ -11,13 +11,12 @@ import java.util.List;
  * @author Evgeny Borisov
  */
 @Component("greaterThan")
-@FilterTransformation
-public class GreaterThanFilter implements SparkTransformation {
+public class GreaterThanFilter implements SparkFilterTransformation {
 
 
     @Override
-    public Dataset<Row> transform(Dataset<Row> dataset, List<String> fieldNames, List<?> params) {
-        return dataset.filter(functions.col(fieldNames.get(0)).geq(params.remove(0)));
+    public Dataset<Row> transform(Dataset<Row> dataset, List<String> fieldNames, OrderedBag<?> params) {
+        return dataset.filter(functions.col(fieldNames.get(0)).geq(params.takeAndRemove()));
     }
 
 
